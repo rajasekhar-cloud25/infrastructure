@@ -100,26 +100,6 @@ variable "primary_name" {
   type        = string
 }
 
-variable "ingress_external" {
-  description = "Flag to determine if the ingress should be external."
-  type        = bool
-}
-
-variable "helm_chart_base_path" {
-  description = "Base path to the Helm charts"
-  type        = string
-}
-
-variable "ingress_values_file" {
-  description = "external ingress value file"
-  type        = string
-}
-
-variable "argocd_values_file" {
-  description = "argocd value file"
-  type        = string
-}
-
 
 variable "shared_environments" {
   description = "List of environments"
