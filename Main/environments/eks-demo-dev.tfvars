@@ -52,3 +52,9 @@ node_max_size       = 2
 node_min_size       = 1
 node_disk_size      = 20
 
+tags = {
+  Project     = "ecommerce-k8s-demo"
+  Environment = "dev"
+  ManagedBy   = "Terraform"
+}
+

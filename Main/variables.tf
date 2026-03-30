@@ -101,3 +101,9 @@ variable "cluster_name" {
   type        = string
   description = "EKS cluster name"
 }
+
+variable "tags" {
+  description = "Common tags applied to all resources"
+  type        = map(string)
+  default     = {}
+}

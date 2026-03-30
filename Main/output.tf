@@ -2,11 +2,6 @@
 # environments/dev/outputs.tf
 # ============================================================
 
-# ── ECR ───
-output "ecr_repository_urls" {
-  value = module.ecr.repository_urls
-}
-
 # ── EKS ───
 output "cluster_name" {
   value = module.eks.cluster_name
@@ -27,28 +22,23 @@ output "github_actions_role_arn" {
   value       = module.iam.github_actions_role_arn
 }
 
-# ── IAM (IRSA) ───
-output "alb_controller_role_arn" {
-  description = "ALB controller — add to Helm serviceAccount annotation"
-  value       = module.iam_irsa.alb_controller_role_arn
-}
-
-output "cluster_autoscaler_role_arn" {
-  description = "Cluster autoscaler — add to Helm serviceAccount annotation"
-  value       = module.iam_irsa.cluster_autoscaler_role_arn
-}
-
-output "ebs_csi_driver_role_arn" {
-  description = "EBS CSI driver — used by EKS addon"
-  value       = module.iam_irsa.ebs_csi_driver_role_arn
-}
-
-output "external_secrets_role_arn" {
-  description = "External secrets — add to Helm serviceAccount annotation"
-  value       = module.iam_irsa.external_secrets_role_arn
-}
-
 # ── VPC ───
 output "vpc_id" {
   value = module.vpc.vpc_id
+}
+
+output "alb_controller_role_arn" {
+  value = module.iam.alb_controller_role_arn
+}
+
+output "cluster_autoscaler_role_arn" {
+  value = module.iam.cluster_autoscaler_role_arn
+}
+
+output "ebs_csi_driver_role_arn" {
+  value = module.iam.ebs_csi_driver_role_arn
+}
+
+output "external_secrets_role_arn" {
+  value = module.iam.external_secrets_role_arn
 }
