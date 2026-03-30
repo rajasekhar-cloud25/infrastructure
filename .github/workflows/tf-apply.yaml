@@ -3,6 +3,12 @@ name: Terraform Apply
 on:
   push:
     branches: [main]
+    paths:
+      - 'Main/**'
+      - 'eks/**'
+      - 'argocd_deployment/**'
+      - 'kubernets-ingress/**'
+      - 'iam/**'
 
 permissions:
   id-token: write
