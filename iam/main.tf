@@ -35,14 +35,8 @@ resource "aws_iam_openid_connect_provider" "eks" {
 }
 
 # GitHub OIDC Provider — for GitHub Actions
-resource "aws_iam_openid_connect_provider" "github" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [
-    "6938fd4d98bab03faadb97b34396831e3780aea1",
-    "1c58a3a8518e8759bf075b76b750d4f2df264fcd"
-  ]
-  tags = merge(var.tags, { Name = "${var.resource_name}-github-oidc" })
+data "aws_iam_openid_connect_provider" "github" {
+  url = "https://token.actions.githubusercontent.com"
 }
 
 # IAM Role — trusted by your GitHub repo only
@@ -52,7 +46,7 @@ resource "aws_iam_role" "github_actions" {
     Version = "2012-10-17"
     Statement = [{
       Effect    = "Allow"
-      Principal = { Federated = aws_iam_openid_connect_provider.github.arn }
+      Principal = { Federated = data.aws_iam_openid_connect_provider.github.arn }
       Action    = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = {
@@ -150,7 +144,7 @@ locals {
 
 resource "aws_iam_role" "eks_cluster" {
   name        = "${local.name_prefix}-eks-cluster-role"
-  description = "EKS cluster role — used by EKS control plane"
+  description = "EKS cluster role used by EKS control plane"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -191,7 +185,7 @@ resource "aws_iam_role_policy_attachment" "eks_vpc_resource_controller" {
 
 resource "aws_iam_role" "eks_node" {
   name        = "${local.name_prefix}-eks-node-role"
-  description = "EKS node role — used by EC2 worker nodes"
+  description = "EKS node role used by EC2 worker nodes"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -504,7 +498,7 @@ resource "aws_iam_role_policy" "cluster_autoscaler" {
 
 resource "aws_iam_role" "ebs_csi_driver" {
   name        = "${local.name_prefix}-ebs-csi-driver"
-  description = "IRSA role for EBS CSI Driver — manages persistent volumes"
+  description = "IRSA role for EBS CSI Driver manages persistent volumes"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -544,7 +538,7 @@ resource "aws_iam_role_policy_attachment" "ebs_csi_driver" {
 
 resource "aws_iam_role" "external_secrets" {
   name        = "${local.name_prefix}-external-secrets"
-  description = "IRSA role for External Secrets Operator — reads from AWS SSM"
+  description = "IRSA role for External Secrets Operator reads from AWS SSM"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
