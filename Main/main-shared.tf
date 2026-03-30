@@ -50,9 +50,6 @@ module "eks" {
 module "kubernetes_ingress" {
   source = "../kubernetes-ingress"
   nlb_eip_allocation_ids  = module.vpc.nlb_eip_allocation_ids
-  cluster_endpoint        = module.eks.cluster_endpoint
-  cluster_ca_certificate  = module.eks.cluster_ca_certificate
-  cluster_name            = module.eks.cluster_name
   depends_on              = [module.eks, module.namespaces]
   domain_name             = var.domain_name
   dns_names               = var.dns_names
