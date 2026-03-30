@@ -1,11 +1,11 @@
 resource "helm_release" "nginx_ingress" {
   name             = "nginx-ingress"
-  chart            = "${path.module}/charts/kubernetes-ingress"
+  chart            = "${path.module}/../charts/kubernetes-ingress"
   namespace        = "default"
   create_namespace = true
 
   values = [
-    file("${path.module}/charts/kubernetes-ingress/values.yaml")
+    file("${path.module}/../charts/kubernetes-ingress/values.yaml")
   ]
 
   # Attach static EIPs to the NLB
