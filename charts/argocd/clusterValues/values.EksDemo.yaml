@@ -1,0 +1,40 @@
+global:
+  # -- Default domain used by all components
+  ## Used for ingresses, certificates, SSO, notifications, etc.
+  domain: argocd.rajasekharcloud.com
+
+
+server:
+  ingress:
+    # -- Enable an ingress resource for the Argo CD server
+    enabled: true
+    # -- Defines which ingress controller will implement the resource
+    ingressClassName: "nginx"
+
+    annotations:
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+
+      # -- List of ingress hosts
+      ## Argo Ingress.
+      ## Hostnames must be provided if Ingress is enabled.
+      ## Secrets must be manually created in the namespace
+    hostname: argocd.rajasekharcloud.com
+    # -- List of ingress paths
+    paths: /
+    # -- Ingress path type. One of `Exact`, `Prefix` or `ImplementationSpecific`
+    pathType: Prefix
+    # -- Ingress TLS configuration
+    tls:
+      - hosts:
+          - argocd.rajasekharcloud.com
+        secretName: argocd-tls-cert
+    # -- Uses `server.service.servicePortHttps` instead `server.service.servicePortHttp`
+    https: false
+
+configs:
+  params:
+    server.insecure: true
