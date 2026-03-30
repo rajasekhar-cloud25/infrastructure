@@ -74,11 +74,6 @@ variable "node_disk_size" {
   default = 20
 }
 
-variable "oidc_issuer_url" {
-  description = "OIDC issuer URL from EKS cluster"
-  type        = string
-}
-
 variable "project_name" {
   type = string
 }

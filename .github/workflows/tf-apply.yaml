@@ -11,6 +11,8 @@ permissions:
 jobs:
   plan:
     runs-on: ubuntu-latest
+    env:
+      TF_LOG: DEBUG
     steps:
       - uses: actions/checkout@v4
 
@@ -34,6 +36,8 @@ jobs:
 
       - name: Terraform Plan
         working-directory: Main
+        env:
+          TF_LOG: DEBUG
         run: |
           terraform plan \
             -lock-timeout=5m \
@@ -42,6 +46,8 @@ jobs:
             -out=tfplan
 
       - name: Upload Plan
+        env:
+          TF_LOG: DEBUG
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
@@ -76,11 +82,15 @@ jobs:
             -backend-config="encrypt=true"
 
       - name: Download Plan
+        env:
+          TF_LOG: DEBUG
         uses: actions/download-artifact@v4
         with:
           name: tfplan
           path: Main/
 
       - name: Terraform Apply
+        env:
+          TF_LOG: DEBUG
         working-directory: Main
         run: terraform apply -auto-approve tfplan
