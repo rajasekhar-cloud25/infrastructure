@@ -37,7 +37,7 @@ jobs:
         working-directory: Main
         run: |
           terraform plan \
-            -var-file="Main/environments/eks-demo-dev.tfvars" \
+            -var-file="environments/eks-demo-dev.tfvars" \
             -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
             -out=tfplan
 
