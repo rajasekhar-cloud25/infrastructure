@@ -33,11 +33,6 @@ variable "single_nat_gateway" {
   default = true
 }
 
-variable "tags" {
-  type = map(string)
-  default = {}
-}
-
 variable "workstation_cidr" {
   description = "Your IP for kubectl access (e.g. 203.0.113.5/32). Leave empty to skip."
   type        = string
@@ -72,16 +67,6 @@ variable "node_min_size" {
 variable "node_disk_size" {
   type    = number
   default = 20
-}
-
-variable "project_name" {
-  type = string
-}
-
-variable "dns_zone_name" {
-  type        = string
-  default     = "rajasekharcloud.com"
-  description = "The DNS zone name for creating records."
 }
 
 variable "namespaces" {

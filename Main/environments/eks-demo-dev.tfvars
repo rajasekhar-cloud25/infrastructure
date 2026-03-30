@@ -34,7 +34,6 @@ dns_names = [
 # ============================================================
 
 aws_region    = "us-east-1"
-environment   = "dev"
 github_repo   = "rajasekhar-cloud25/infrastructure"
 
 # VPC (2 AZs for cost saving)
