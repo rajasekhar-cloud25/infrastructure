@@ -101,12 +101,6 @@ variable "primary_name" {
 }
 
 
-variable "shared_environments" {
-  description = "List of environments"
-  type = list(string)
-}
-
-
 variable "dns_names" {
   description = "List of DNS subdomains to create"
   type        = list(string)
@@ -121,18 +115,6 @@ variable "domain_name" {
 variable "cluster_version" {
   description = "Kubernetes version for the EKS cluster"
   type        = string
-}
-
-variable "extra_helm_set_values" {
-  type = map(string)
-  default = {}
-  description = "Additional Helm set values for the MQTT ingress module"
-}
-
-
-variable "cluster_endpoint" {
-  type        = string
-  description = "EKS cluster endpoint"
 }
 
 variable "cluster_name" {
