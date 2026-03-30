@@ -1,0 +1,107 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:  # ← manual trigger only
+    inputs:
+      confirm:
+        description: 'Type "destroy" to confirm'
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "destroy" ]; then
+            echo "❌ You must type 'destroy' to confirm"
+            exit 1
+          fi
+          echo "✅ Confirmation validated"
+
+  plan_destroy:
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: Main
+        run: |
+          terraform init \
+            -backend-config="bucket=ecommerce-demo-terraform-state-$(aws sts get-caller-identity --query Account --output text)" \
+            -backend-config="key=infrastructure/ecommerce-k8s-demo.tfstate" \
+            -backend-config="region=${{ vars.AWS_REGION }}" \
+            -backend-config="encrypt=true"
+
+      - name: Terraform Plan Destroy
+        working-directory: Main
+        run: |
+          terraform plan \
+            -destroy \
+            -lock=false \
+            -var-file="environments/eks-demo-dev.tfvars" \
+            -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
+            -out=destroyplan
+
+      - name: Upload Destroy Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: destroyplan
+          path: Main/destroyplan
+
+  approve_destroy:
+    runs-on: ubuntu-latest
+    needs: plan_destroy
+    environment: production    # ← manual approval gate
+    steps:
+      - name: Approved
+        run: echo "✅ Destroy approved — proceeding"
+
+  destroy:
+    runs-on: ubuntu-latest
+    needs: approve_destroy
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: Main
+        run: |
+          terraform init \
+            -backend-config="bucket=ecommerce-demo-terraform-state-$(aws sts get-caller-identity --query Account --output text)" \
+            -backend-config="key=infrastructure/ecommerce-k8s-demo.tfstate" \
+            -backend-config="region=${{ vars.AWS_REGION }}" \
+            -backend-config="encrypt=true"
+
+      - name: Download Destroy Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: destroyplan
+          path: Main/
+
+      - name: Terraform Destroy
+        working-directory: Main
+        run: terraform apply -auto-approve -lock=false destroyplan
