@@ -101,3 +101,20 @@ jobs:
       - name: Terraform Apply
         working-directory: Main
         run: terraform apply -auto-approve tfplan
+
+     # ← runs even if job is cancelled
+      - name: Release Lock on Cancellation
+        if: cancelled()
+        working-directory: Main
+        run: |
+          LOCK_ID=$(aws dynamodb scan \
+            --table-name terraform-state-lock \
+            --query "Items[0].Info.S" \
+            --output text 2>/dev/null || echo "")
+         
+          if [ -n "$LOCK_ID" ]; then
+            echo "Releasing lock: $LOCK_ID"
+            terraform force-unlock -force $LOCK_ID
+          else
+            echo "No lock found"
+          fi
