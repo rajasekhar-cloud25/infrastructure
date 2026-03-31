@@ -29,6 +29,8 @@ dns_names = [
   "eks-demo"
 ]
 
+domain_name = "rajasekharcloud.com"
+
 # ============================================================
 # environments/dev/terraform.tfvars
 # ============================================================

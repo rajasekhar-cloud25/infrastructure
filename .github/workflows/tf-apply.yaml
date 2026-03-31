@@ -41,36 +41,6 @@ jobs:
             -backend-config="region=${{ vars.AWS_REGION }}" \
             -backend-config="encrypt=true"
 
-      - name: Import Route53 Zone
-        working-directory: Main
-        env:
-          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
-        run: |
-          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          
-          # Debug — list all zones to see exact format
-          echo "All hosted zones:"
-          
-          sudo apt-get install -y jq
-          
-          ZONE_ID=$(aws route53 list-hosted-zones --output json | \
-            jq -r --arg domain "${DOMAIN_NAME}." \
-            '.HostedZones[] | select(.Name == $domain) | .Id | split("/")[2]')
-          
-          echo "Zone ID found: $ZONE_ID"
-
-          if [ -n "$ZONE_ID" ] && [ "$ZONE_ID" != "None" ]; then
-            echo "Importing zone $ZONE_ID"
-            terraform import \
-              -lock=false \
-              -var-file="environments/eks-demo-dev.tfvars" \
-              -var="domain_name=$DOMAIN_NAME" \
-              module.kubernetes_ingress.aws_route53_zone.main \
-              $ZONE_ID || echo "Already imported"
-          else
-            echo "No existing zone found - will be created"
-          fi
-
       - name: Terraform Plan
         working-directory: Main
         env:
@@ -79,7 +49,6 @@ jobs:
           terraform plan \
             -lock-timeout=5m \
             -var-file="environments/eks-demo-dev.tfvars" \
-            -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
             -out=tfplan
 
       - name: Upload Plan
