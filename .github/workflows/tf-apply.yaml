@@ -51,7 +51,11 @@ jobs:
           # Debug — list all zones to see exact format
           echo "All hosted zones:"
           
-          ZONE_ID=$(aws route53 list-hosted-zones --output json | python3 -c "import sys,json;data=json.load(sys.stdin);domain='$DOMAIN_NAME';[print(z['Id'].split('/')[-1]) for z in data['HostedZones'] if z['Name'].rstrip('.')==domain.rstrip('.')]")
+          sudo apt-get install -y jq
+          
+          ZONE_ID=$(aws route53 list-hosted-zones --output json | \
+            jq -r --arg domain "${DOMAIN_NAME}." \
+            '.HostedZones[] | select(.Name == $domain) | .Id | split("/")[2]')
           
           echo "Zone ID found: $ZONE_ID"
 
