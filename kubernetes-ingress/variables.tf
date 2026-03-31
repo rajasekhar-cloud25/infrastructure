@@ -13,3 +13,8 @@ variable "domain_name" {
   description = "Root domain name"
   type        = string
 }
+
+variable "public_subnet_ids" {
+  type        = list(string)
+  description = "Public subnet IDs for NLB"
+}

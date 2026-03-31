@@ -55,6 +55,7 @@ module "kubernetes_ingress" {
   depends_on              = [module.eks, module.namespaces]
   domain_name             = var.domain_name
   dns_names               = var.dns_names
+  public_subnet_ids       = module.vpc.private_subnet_ids
 }
 
 module "namespaces" {
