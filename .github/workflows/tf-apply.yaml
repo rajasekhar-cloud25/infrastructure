@@ -32,41 +32,32 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Restore State File
+      - name: Remove Delete Marker and Restore State
         run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           STATE_BUCKET="ecommerce-demo-terraform-state-${ACCOUNT_ID}"
           STATE_KEY="infrastructure/ecommerce-k8s-demo.tfstate"
 
-          # Delete all versions and start fresh
-          aws s3api list-object-versions \
+          # Step 1 — Remove the delete marker
+          aws s3api delete-object \
             --bucket "$STATE_BUCKET" \
-            --prefix "$STATE_KEY" \
-            --query 'Versions[*].VersionId' \
-            --output text | tr '\t' '\n' | while read vid; do
-              aws s3api delete-object \
-                --bucket "$STATE_BUCKET" \
-                --key "$STATE_KEY" \
-                --version-id "$vid"
-            done
+            --key "$STATE_KEY" \
+            --version-id "PWmo0agwHSWf8ZMi53gGhZUY7X8VWZz2"
 
-          # Delete all delete markers
-          aws s3api list-object-versions \
+          echo "✅ Delete marker removed"
+
+          # Step 2 — Restore latest version
+          aws s3api copy-object \
             --bucket "$STATE_BUCKET" \
-            --prefix "$STATE_KEY" \
-            --query 'DeleteMarkers[*].VersionId' \
-            --output text | tr '\t' '\n' | while read vid; do
-              aws s3api delete-object \
-                --bucket "$STATE_BUCKET" \
-                --key "$STATE_KEY" \
-                --version-id "$vid"
-            done
+            --copy-source "$STATE_BUCKET/$STATE_KEY?versionId=FiBWUhoQ1CBAV.gJAaXcF7DCh6.M4q6l" \
+            --key "$STATE_KEY"
+
+          echo "✅ State file restored from latest version"
 
       - name: Terraform Init
         working-directory: Main
         run: |
           terraform init \
-            -reconfigure \
             -backend-config="bucket=ecommerce-demo-terraform-state-$(aws sts get-caller-identity --query Account --output text)" \
             -backend-config="key=infrastructure/ecommerce-k8s-demo.tfstate" \
             -backend-config="region=${{ vars.AWS_REGION }}" \
