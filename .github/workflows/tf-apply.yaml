@@ -38,7 +38,7 @@ jobs:
           terraform init \
             -reconfigure \
             -backend-config="bucket=ecommerce-demo-terraform-state-$(aws sts get-caller-identity --query Account --output text)" \
-            -backend-config="key=infrastructure/ecommerce-k8s-demo.tfstate" \
+            -backend-config="key=ecommerce-k8s-demo.tfstate" \
             -backend-config="region=${{ vars.AWS_REGION }}" \
             -backend-config="encrypt=true"
 
@@ -63,8 +63,8 @@ jobs:
 
   apply:
     runs-on: ubuntu-latest
-    needs: plan                  # ← waits for plan to finish
-    environment: production      # ← triggers manual approval gate
+    needs: plan
+    environment: production  
 
     steps:
       - uses: actions/checkout@v4
