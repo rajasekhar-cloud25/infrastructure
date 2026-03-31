@@ -32,6 +32,19 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Restore State File
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          STATE_BUCKET="ecommerce-demo-terraform-state-${ACCOUNT_ID}"
+          STATE_KEY="infrastructure/ecommerce-k8s-demo.tfstate"
+
+          # List all versions
+          aws s3api list-object-versions \
+            --bucket "$STATE_BUCKET" \
+            --prefix "$STATE_KEY" \
+            --query "Versions[*].{VersionId:VersionId,LastModified:LastModified,IsLatest:IsLatest}" \
+            --output table
+
       - name: Terraform Init
         working-directory: Main
         run: |
