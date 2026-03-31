@@ -32,27 +32,18 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Remove Delete Marker and Restore State
+      - name: Restore State File
         run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           STATE_BUCKET="ecommerce-demo-terraform-state-${ACCOUNT_ID}"
           STATE_KEY="infrastructure/ecommerce-k8s-demo.tfstate"
 
-          # Step 1 — Remove the delete marker
-          aws s3api delete-object \
-            --bucket "$STATE_BUCKET" \
-            --key "$STATE_KEY" \
-            --version-id "PWmo0agwHSWf8ZMi53gGhZUY7X8VWZz2"
-
-          echo "✅ Delete marker removed"
-
-          # Step 2 — Restore latest version
           aws s3api copy-object \
             --bucket "$STATE_BUCKET" \
-            --copy-source "$STATE_BUCKET/$STATE_KEY?versionId=FiBWUhoQ1CBAV.gJAaXcF7DCh6.M4q6l" \
+            --copy-source "$STATE_BUCKET/$STATE_KEY?versionId=C9zNKhyKdhuxweScKIpFnNHAOx6z__Ad" \
             --key "$STATE_KEY"
 
-          echo "✅ State file restored from latest version"
+          echo "✅ State file restored"
 
       - name: Terraform Init
         working-directory: Main
