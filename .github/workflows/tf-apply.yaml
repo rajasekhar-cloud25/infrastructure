@@ -32,27 +32,6 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Clean All State Versions
-        run: |
-          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          STATE_BUCKET="ecommerce-demo-terraform-state-${ACCOUNT_ID}"
-          STATE_KEY="infrastructure/ecommerce-k8s-demo.tfstate"
-
-          # Delete all remaining delete markers
-          aws s3api list-object-versions \
-            --bucket "$STATE_BUCKET" \
-            --prefix "$STATE_KEY" \
-            --output json | \
-          jq -r '.DeleteMarkers[]?.VersionId' | while read vid; do
-            echo "Removing delete marker: $vid"
-            aws s3api delete-object \
-              --bucket "$STATE_BUCKET" \
-              --key "$STATE_KEY" \
-              --version-id "$vid" || true
-          done
-
-          echo "✅ All markers cleared — starting fresh"
-
       - name: Terraform Init
         working-directory: Main
         run: |
