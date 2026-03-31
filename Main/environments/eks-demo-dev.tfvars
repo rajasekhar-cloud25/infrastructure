@@ -49,9 +49,9 @@ cluster_version     = "1.35"
 workstation_cidr    = ""  # Set your IP: "203.0.113.5/32"
 node_instance_types = ["t3.small"]
 node_capacity_type  = "SPOT"
-node_desired_size   = 1
+node_desired_size   = 5
 node_max_size       = 2
-node_min_size       = 1
+node_min_size       = 5
 node_disk_size      = 20
 
 tags = {
