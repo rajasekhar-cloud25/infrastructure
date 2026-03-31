@@ -38,12 +38,12 @@ jobs:
           STATE_BUCKET="ecommerce-demo-terraform-state-${ACCOUNT_ID}"
           STATE_KEY="infrastructure/ecommerce-k8s-demo.tfstate"
 
-          # List all versions
-          aws s3api list-object-versions \
+          aws s3api copy-object \
             --bucket "$STATE_BUCKET" \
-            --prefix "$STATE_KEY" \
-            --query "Versions[*].{VersionId:VersionId,LastModified:LastModified,IsLatest:IsLatest}" \
-            --output table
+            --copy-source "$STATE_BUCKET/$STATE_KEY?versionId=C9zNKhyKdhuxweScKIpFnNHAOx6z__Ad" \
+            --key "$STATE_KEY"
+
+          echo "✅ State file restored"
 
       - name: Terraform Init
         working-directory: Main
