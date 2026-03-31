@@ -57,3 +57,7 @@ output "node_policy_attachments" {
     aws_iam_role_policy_attachment.eks_ssm.id
   ]
 }
+
+output "cert_manager_role_arn" {
+  value = aws_iam_role.cert_manager.arn
+}

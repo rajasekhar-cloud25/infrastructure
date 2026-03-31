@@ -600,3 +600,58 @@ resource "aws_iam_role_policy" "external_secrets" {
     ]
   })
 }
+
+
+resource "aws_iam_role" "cert_manager" {
+  name        = "${local.name_prefix}-cert-manager"
+  description = "IRSA role for cert-manager Route53 DNS challenge"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Federated = aws_iam_openid_connect_provider.eks.arn }
+      Action    = "sts:AssumeRoleWithWebIdentity"
+      Condition = {
+        StringEquals = {
+          "${local.oidc_provider}:sub" = "system:serviceaccount:cert-manager:cert-manager"
+          "${local.oidc_provider}:aud" = "sts.amazonaws.com"
+        }
+      }
+    }]
+  })
+
+  tags = merge(var.tags, {
+    Name = "${local.name_prefix}-cert-manager"
+    Role = "irsa-cert-manager"
+  })
+}
+
+resource "aws_iam_role_policy" "cert_manager" {
+  name = "${local.name_prefix}-cert-manager-policy"
+  role = aws_iam_role.cert_manager.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["route53:GetChange"]
+        Resource = "arn:aws:route53:::change/*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "route53:ChangeResourceRecordSets",
+          "route53:ListResourceRecordSets"
+        ]
+        Resource = "arn:aws:route53:::hostedzone/*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["route53:ListHostedZonesByName"]
+        Resource = "*"
+      }
+    ]
+  })
+}
