@@ -55,7 +55,6 @@ jobs:
             -destroy \
             -lock=false \
             -var-file="environments/eks-demo-dev.tfvars" \
-            -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
             -out=destroyplan
 
       - name: Upload Destroy Plan
