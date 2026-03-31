@@ -44,20 +44,22 @@ jobs:
         working-directory: Main
         run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          
+          # Debug — list all zones to see exact format
+          echo "All hosted zones:"
+          aws route53 list-hosted-zones \
+            --query "HostedZones[*].{Name:Name,Id:Id}" \
+            --output table
+          
+          
           ZONE_ID=$(aws route53 list-hosted-zones \
             --query "HostedZones[?Name=='${{ secrets.DOMAIN_NAME }}.'].Id" \
             --output text | cut -d'/' -f3)
-    
-          echo "Zone ID: $ZONE_ID"
+          
+          echo "Zone ID found: $ZONE_ID"
 
-          if [ -n "$ZONE_ID" ] && [ "$ZONE_ID" != "None" ]; then
+          if [ -n "$ZONE_ID" ] && [ "$ZONE_ID" != "None" ] && [ "$ZONE_ID" != "" ]; then
             echo "Importing zone $ZONE_ID"
-            terraform init \
-              -backend-config="bucket=ecommerce-demo-terraform-state-${ACCOUNT_ID}" \
-              -backend-config="key=infrastructure/ecommerce-k8s-demo.tfstate" \
-              -backend-config="region=${{ vars.AWS_REGION }}" \
-              -backend-config="encrypt=true"
-
             terraform import \
               -lock=false \
               -var-file="environments/eks-demo-dev.tfvars" \
