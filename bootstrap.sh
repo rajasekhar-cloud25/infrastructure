@@ -43,18 +43,6 @@ aws s3api put-public-access-block \
 
 echo "✅ S3 bucket ready"
 
-# ── Create DynamoDB table ─────────────────────
-echo "Creating DynamoDB table: $LOCK_TABLE"
-aws dynamodb create-table \
-  --table-name "$LOCK_TABLE" \
-  --attribute-definitions AttributeName=LockID,AttributeType=S \
-  --key-schema AttributeName=LockID,KeyType=HASH \
-  --billing-mode PAY_PER_REQUEST \
-  --region "$AWS_REGION" \
-  2>/dev/null || echo "Table already exists"
-
-echo "✅ DynamoDB table ready"
-
 # ── Export for GitHub Actions ─────────────────
 echo "STATE_BUCKET=${STATE_BUCKET}" >> $GITHUB_OUTPUT
 echo "LOCK_TABLE=${LOCK_TABLE}" >> $GITHUB_OUTPUT
