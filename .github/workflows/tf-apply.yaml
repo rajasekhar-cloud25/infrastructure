@@ -32,23 +32,32 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Restore State File
+      - name: Clean All State Versions
         run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           STATE_BUCKET="ecommerce-demo-terraform-state-${ACCOUNT_ID}"
           STATE_KEY="infrastructure/ecommerce-k8s-demo.tfstate"
 
-          aws s3api copy-object \
+          # Delete all remaining delete markers
+          aws s3api list-object-versions \
             --bucket "$STATE_BUCKET" \
-            --copy-source "$STATE_BUCKET/$STATE_KEY?versionId=C9zNKhyKdhuxweScKIpFnNHAOx6z__Ad" \
-            --key "$STATE_KEY"
+            --prefix "$STATE_KEY" \
+            --output json | \
+          jq -r '.DeleteMarkers[]?.VersionId' | while read vid; do
+            echo "Removing delete marker: $vid"
+            aws s3api delete-object \
+              --bucket "$STATE_BUCKET" \
+              --key "$STATE_KEY" \
+              --version-id "$vid" || true
+          done
 
-          echo "✅ State file restored"
+          echo "✅ All markers cleared — starting fresh"
 
       - name: Terraform Init
         working-directory: Main
         run: |
           terraform init \
+            -reconfigure \
             -backend-config="bucket=ecommerce-demo-terraform-state-$(aws sts get-caller-identity --query Account --output text)" \
             -backend-config="key=infrastructure/ecommerce-k8s-demo.tfstate" \
             -backend-config="region=${{ vars.AWS_REGION }}" \
