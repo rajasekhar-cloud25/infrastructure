@@ -4,4 +4,8 @@ resource "helm_release" "argocd" {
   version   = "3.0.11"
   namespace = "argocd"
   values = [file("${path.module}/../charts/argocd/clusterValues/values.EksDemo.yaml")]
+
+  skip_crds         = false
+  replace           = true
+  force_update      = true
 }
