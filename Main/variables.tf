@@ -107,3 +107,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "admin_iam_user_arn" {
+  description = "Admin IAM user ARN for local kubectl access"
+  type        = string
+  default     = ""
+}

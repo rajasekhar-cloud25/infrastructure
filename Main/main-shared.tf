@@ -45,6 +45,8 @@ module "eks" {
   node_min_size       = var.node_min_size
   node_disk_size      = var.node_disk_size
   resource_name       = var.primary_name
+  github_actions_role_arn = module.iam.github_actions_role_arn
+  admin_iam_user_arn      = var.admin_iam_user_arn
 }
 
 module "kubernetes_ingress" {

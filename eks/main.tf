@@ -118,6 +118,10 @@ resource "aws_eks_cluster" "demo" {
   name     = var.cluster_name
   version  = var.cluster_version
   role_arn = var.cluster_role_arn
+  access_config {
+    authentication_mode = "API_AND_CONFIG_MAP"
+    bootstrap_cluster_creator_admin_permissions = true
+  }
 
   vpc_config {
     security_group_ids = [aws_security_group.demo-sg.id]
@@ -128,7 +132,9 @@ resource "aws_eks_cluster" "demo" {
 
   depends_on = [var.cluster_policy_attachments]
 
-  tags = var.tags
+  tags = merge(var.tags, {
+    Name = "${var.cluster_name}-node"
+  })
 }
 
 
@@ -154,5 +160,51 @@ resource "aws_eks_node_group" "demo" {
 
   depends_on = [var.node_policy_attachments]
 
-  tags = var.tags
+  tags = merge(var.tags, {
+    Name = "${var.cluster_name}-node"
+  })
+}
+
+
+
+# GitHub Actions role — cluster admin
+resource "aws_eks_access_entry" "github_actions" {
+  cluster_name  = aws_eks_cluster.demo.name
+  principal_arn = var.github_actions_role_arn
+  type          = "STANDARD"
+
+  depends_on = [aws_eks_cluster.demo]
+}
+
+resource "aws_eks_access_policy_association" "github_actions" {
+  cluster_name  = aws_eks_cluster.demo.name
+  principal_arn = var.github_actions_role_arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.github_actions]
+}
+
+# Your IAM user — cluster admin
+resource "aws_eks_access_entry" "admin_user" {
+  cluster_name  = aws_eks_cluster.demo.name
+  principal_arn = var.admin_iam_user_arn
+  type          = "STANDARD"
+
+  depends_on = [aws_eks_cluster.demo]
+}
+
+resource "aws_eks_access_policy_association" "admin_user" {
+  cluster_name  = aws_eks_cluster.demo.name
+  principal_arn = var.admin_iam_user_arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.admin_user]
 }

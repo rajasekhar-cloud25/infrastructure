@@ -132,3 +132,14 @@ variable "api_allowed_cidrs" {
 }
 
 
+variable "github_actions_role_arn" {
+  description = "GitHub Actions IAM role ARN"
+  type        = string
+}
+
+variable "admin_iam_user_arn" {
+  description = "Admin IAM user ARN for local kubectl access"
+  type        = string
+  default     = ""
+}
+

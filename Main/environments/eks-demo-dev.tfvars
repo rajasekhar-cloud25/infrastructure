@@ -37,6 +37,7 @@ domain_name = "rajasekharcloud.com"
 
 aws_region    = "us-east-1"
 github_repo   = "rajasekhar-cloud25/infrastructure"
+admin_iam_user_arn = "arn:aws:iam::008469331115:user/raj-admin"
 
 # VPC (2 AZs for cost saving)
 availability_zones   = ["us-east-1a", "us-east-1b"]
