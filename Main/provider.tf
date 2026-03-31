@@ -37,7 +37,6 @@ provider "helm" {
     token                  = ephemeral.aws_eks_cluster_auth.main.token
   }
 }
-}
 
 # Configure the AWS Provider
 provider "aws" {
