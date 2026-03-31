@@ -38,12 +38,29 @@ jobs:
           STATE_BUCKET="ecommerce-demo-terraform-state-${ACCOUNT_ID}"
           STATE_KEY="infrastructure/ecommerce-k8s-demo.tfstate"
 
-          aws s3api copy-object \
+          # Delete all versions and start fresh
+          aws s3api list-object-versions \
             --bucket "$STATE_BUCKET" \
-            --copy-source "$STATE_BUCKET/$STATE_KEY?versionId=C9zNKhyKdhuxweScKIpFnNHAOx6z__Ad" \
-            --key "$STATE_KEY"
+            --prefix "$STATE_KEY" \
+            --query 'Versions[*].VersionId' \
+            --output text | tr '\t' '\n' | while read vid; do
+              aws s3api delete-object \
+                --bucket "$STATE_BUCKET" \
+                --key "$STATE_KEY" \
+                --version-id "$vid"
+            done
 
-          echo "✅ State file restored"
+          # Delete all delete markers
+          aws s3api list-object-versions \
+            --bucket "$STATE_BUCKET" \
+            --prefix "$STATE_KEY" \
+            --query 'DeleteMarkers[*].VersionId' \
+            --output text | tr '\t' '\n' | while read vid; do
+              aws s3api delete-object \
+                --bucket "$STATE_BUCKET" \
+                --key "$STATE_KEY" \
+                --version-id "$vid"
+            done
 
       - name: Terraform Init
         working-directory: Main
