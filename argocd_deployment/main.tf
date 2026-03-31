@@ -8,4 +8,5 @@ resource "helm_release" "argocd" {
   skip_crds         = false
   replace           = true
   force_update      = true
+  wait              = true
 }
