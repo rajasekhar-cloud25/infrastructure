@@ -40,6 +40,34 @@ jobs:
             -backend-config="region=${{ vars.AWS_REGION }}" \
             -backend-config="encrypt=true"
 
+      - name: Import Route53 Zone
+        working-directory: Main
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          ZONE_ID=$(aws route53 list-hosted-zones \
+            --query "HostedZones[?Name=='${{ secrets.DOMAIN_NAME }}.'].Id" \
+            --output text | cut -d'/' -f3)
+    
+          echo "Zone ID: $ZONE_ID"
+
+          if [ -n "$ZONE_ID" ] && [ "$ZONE_ID" != "None" ]; then
+            echo "Importing zone $ZONE_ID"
+            terraform init \
+              -backend-config="bucket=ecommerce-demo-terraform-state-${ACCOUNT_ID}" \
+              -backend-config="key=infrastructure/ecommerce-k8s-demo.tfstate" \
+              -backend-config="region=${{ vars.AWS_REGION }}" \
+              -backend-config="encrypt=true"
+
+            terraform import \
+              -lock=false \
+              -var-file="environments/eks-demo-dev.tfvars" \
+              -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
+              module.kubernetes_ingress.aws_route53_zone.main \
+              $ZONE_ID || echo "Already imported"
+          else
+            echo "No existing zone found - will be created"
+          fi
+
       - name: Terraform Plan
         working-directory: Main
         env:
