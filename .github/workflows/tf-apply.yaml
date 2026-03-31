@@ -9,6 +9,7 @@ on:
       - 'argocd_deployment/**'
       - 'kubernets-ingress/**'
       - 'iam/**'
+      - '.github/**'
 
 permissions:
   id-token: write
