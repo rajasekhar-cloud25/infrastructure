@@ -43,6 +43,8 @@ jobs:
 
       - name: Import Route53 Zone
         working-directory: Main
+        env:
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
         run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           
@@ -54,17 +56,17 @@ jobs:
           
           
           ZONE_ID=$(aws route53 list-hosted-zones \
-            --query "HostedZones[?Name=='${{ secrets.DOMAIN_NAME }}.'].Id" \
+            --query "HostedZones[?Name=='${DOMAIN_NAME}.'].Id" \
             --output text | cut -d'/' -f3)
           
           echo "Zone ID found: $ZONE_ID"
 
-          if [ -n "$ZONE_ID" ] && [ "$ZONE_ID" != "None" ] && [ "$ZONE_ID" != "" ]; then
+          if [ -n "$ZONE_ID" ] && [ "$ZONE_ID" != "None" ]; then
             echo "Importing zone $ZONE_ID"
             terraform import \
               -lock=false \
               -var-file="environments/eks-demo-dev.tfvars" \
-              -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
+              -var="domain_name=$DOMAIN_NAME" \
               module.kubernetes_ingress.aws_route53_zone.main \
               $ZONE_ID || echo "Already imported"
           else
