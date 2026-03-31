@@ -50,14 +50,18 @@ jobs:
           
           # Debug — list all zones to see exact format
           echo "All hosted zones:"
-          aws route53 list-hosted-zones \
-            --query "HostedZones[*].{Name:Name,Id:Id}" \
-            --output table
-          
           
           ZONE_ID=$(aws route53 list-hosted-zones \
-            --query "HostedZones[?Name=='${DOMAIN_NAME}.'].Id" \
-            --output text | cut -d'/' -f3)
+            --output json | \
+            python3 -c "
+            import sys, json
+            data = json.load(sys.stdin)
+            domain = '$DOMAIN_NAME'
+            for zone in data['HostedZones']:
+              if zone['Name'].rstrip('.') == domain.rstrip('.'):
+                print(zone['Id'].split('/')[-1])
+                break
+            ")
           
           echo "Zone ID found: $ZONE_ID"
 
