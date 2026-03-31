@@ -10,6 +10,7 @@ on:
       - 'kubernets-ingress/**'
       - 'iam/**'
       - '.github/**'
+      - 'charts/**'
 
 permissions:
   id-token: write
