@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "2.37.1"
+    }
+  }
+}
 resource "helm_release" "nginx_ingress" {
   name             = "nginx-ingress"
   chart            = "${path.module}/../charts/kubernetes-ingress"
@@ -20,22 +28,14 @@ resource "helm_release" "nginx_ingress" {
   }
 }
 
+data "aws_eip" "nlb" {
+  count = length(var.nlb_eip_allocation_ids)
+  id    = var.nlb_eip_allocation_ids[count.index]
+}
+
 data "aws_route53_zone" "main" {
   name         = var.domain_name
   private_zone = false
-}
-
-data "kubernetes_service" "nginx_ingress" {
-  metadata {
-    name      = "nginx-ingress-nginx-ingress-controller"
-    namespace = "default"
-  }
-  depends_on = [helm_release.nginx_ingress]
-}
-
-data "aws_lb" "nginx" {
-  name       = split("-", split(".", data.kubernetes_service.nginx_ingress.status[0].load_balancer[0].ingress[0].hostname)[0])[0]
-  depends_on = [helm_release.nginx_ingress]
 }
 
 resource "aws_route53_record" "dns_records" {
@@ -44,10 +44,7 @@ resource "aws_route53_record" "dns_records" {
   zone_id = data.aws_route53_zone.main.zone_id
   name    = "${each.value}.${var.domain_name}"
   type    = "A"
-
-  alias {
-    name                   = data.kubernetes_service.nginx_ingress.status[0].load_balancer[0].ingress[0].hostname
-    zone_id                = data.aws_lb.nginx.zone_id
-    evaluate_target_health = true
-  }
+  ttl     = 300
+  records = [data.aws_eip.nlb[0].public_ip]
+  depends_on = [helm_release.nginx_ingress]
 }

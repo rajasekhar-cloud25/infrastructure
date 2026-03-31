@@ -24,11 +24,3 @@ output "nat_gateway_ips" {
 output "availability_zone"{
   value = var.availability_zones
 }
-
-output "nlb_eip_allocation_ids" {
-  value = aws_eip.nlb[*].id
-}
-
-output "nlb_eip_public_ips" {
-  value = aws_eip.nlb[*].public_ip
-}

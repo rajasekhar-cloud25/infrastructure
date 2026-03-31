@@ -113,3 +113,8 @@ variable "admin_iam_user_arn" {
   type        = string
   default     = ""
 }
+
+variable "eip_count" {
+  type    = number
+  default = 2
+}

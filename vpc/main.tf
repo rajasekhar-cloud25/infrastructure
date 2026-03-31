@@ -44,16 +44,6 @@ resource "aws_subnet" "private" {
   })
 }
 
-# EIP for NLB (one per AZ)
-resource "aws_eip" "nlb" {
-  count      = length(var.public_subnet_cidrs)
-  domain     = "vpc"
-  depends_on = [aws_internet_gateway.main]
-  tags = merge(var.tags, {
-    Name = "${var.resource_name}-nlb-eip-${count.index}"
-  })
-}
-
 # EIP for NAT Gateway
 resource "aws_eip" "nat" {
   count      = var.single_nat_gateway ? 1 : length(var.public_subnet_cidrs)
