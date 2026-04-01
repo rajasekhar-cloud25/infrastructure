@@ -56,6 +56,7 @@ module "kubernetes_ingress" {
   domain_name             = var.domain_name
   dns_names               = var.dns_names
   public_subnet_ids       = module.vpc.public_subnet_ids
+  acm_certificate_arn     = var.acm_certificate_arn
 }
 
 module "namespaces" {
@@ -67,12 +68,5 @@ module "namespaces" {
 
 module "argocd_deployment" {
   source               = "../argocd_deployment"
-  depends_on = [module.eks, module.namespaces]
-}
-
-
-module "cert_manager" {
-  source                = "../cert_manager"
-  cert_manager_role_arn = module.iam.cert_manager_role_arn
   depends_on = [module.eks, module.namespaces]
 }

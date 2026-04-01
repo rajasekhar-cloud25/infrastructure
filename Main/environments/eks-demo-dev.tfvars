@@ -58,6 +58,7 @@ node_desired_size   = 5
 node_max_size       = 5
 node_min_size       = 2
 node_disk_size      = 20
+acm_certificate_arn = "arn:aws:acm:us-east-1:008469331115:certificate/f8af3415-c103-48b5-a922-a45a317a6603"
 
 tags = {
   Project     = "ecommerce-k8s-demo"

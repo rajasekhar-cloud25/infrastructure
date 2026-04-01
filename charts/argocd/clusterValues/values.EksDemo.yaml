@@ -17,7 +17,6 @@ server:
     annotations:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-      cert-manager.io/cluster-issuer: letsencrypt-prod
       # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
 
@@ -31,12 +30,11 @@ server:
     # -- Ingress path type. One of `Exact`, `Prefix` or `ImplementationSpecific`
     pathType: Prefix
     # -- Ingress TLS configuration
-    tls:
-      - hosts:
-          - argocd.rajasekharcloud.com
-        secretName: argocd-tls-cert
+
     # -- Uses `server.service.servicePortHttps` instead `server.service.servicePortHttp`
     https: false
+  extraArgs:
+    - --insecure
 
 configs:
   params:

@@ -123,3 +123,8 @@ variable "nlb_eip_allocation_ids" {
   type        = list(string)
   description = "EIP allocation IDs for NLB"
 }
+
+variable "acm_certificate_arn" {
+  description = "ACM certificate ARN for NLB TLS termination"
+  type        = string
+}

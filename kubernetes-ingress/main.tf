@@ -18,6 +18,23 @@ resource "helm_release" "nginx_ingress" {
     value = join("\\,", var.public_subnet_ids)
     type  = "string"
   }
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-cert"
+    value = var.acm_certificate_arn
+    type  = "string"
+  }
+
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-ports"
+    value = "443"
+    type  = "string"
+  }
+
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-backend-protocol"
+    value = "tcp"
+    type  = "string"
+  }
 }
 
 data "aws_eip" "nlb" {

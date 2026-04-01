@@ -18,3 +18,8 @@ variable "public_subnet_ids" {
   type        = list(string)
   description = "Public subnet IDs for NLB"
 }
+
+variable "acm_certificate_arn" {
+  description = "ACM certificate ARN"
+  type        = string
+}
