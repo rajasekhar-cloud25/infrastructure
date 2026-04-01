@@ -52,7 +52,6 @@ single_nat_gateway   = true
 
 # EKS (cost-optimized for demo)
 cluster_version     = "1.35"
-workstation_cidr    = ""  # Set your IP: "203.0.113.5/32"
 node_instance_types = ["t3.small"]
 node_capacity_type  = "SPOT"
 node_desired_size   = 5
