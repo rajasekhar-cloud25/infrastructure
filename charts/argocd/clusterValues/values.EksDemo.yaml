@@ -16,7 +16,8 @@ server:
 
     annotations:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
       # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
 
@@ -33,8 +34,6 @@ server:
 
     # -- Uses `server.service.servicePortHttps` instead `server.service.servicePortHttp`
     https: false
-  extraArgs:
-    - --insecure
 
 configs:
   params:
