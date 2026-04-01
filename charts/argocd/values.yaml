@@ -30,7 +30,7 @@ openshift:
 ## Custom resource configuration
 crds:
   # -- Install and upgrade CRDs
-  install: true
+  install: false
   # -- Keep CRDs on chart uninstall
   keep: false
   # -- Annotations to be added to all CRDs

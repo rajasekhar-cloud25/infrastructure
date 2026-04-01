@@ -12,6 +12,14 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = ">= 2.0"
     }
+    kubectl = {
+      source  = "alekc/kubectl"
+      version = "2.1.6"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.0"
+    }
   }
 }
 
@@ -44,6 +52,17 @@ provider "helm" {
       args        = ["eks", "get-token", "--cluster-name", try(module.eks.cluster_name, "placeholder"), "--region", var.aws_region]
     }
   }
+}
+
+provider "kubectl" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_ca_certificate)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--region", var.aws_region]
+  }
+  load_config_file = false
 }
 
 # Configure the AWS Provider
