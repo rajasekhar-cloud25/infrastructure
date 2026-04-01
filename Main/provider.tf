@@ -6,7 +6,7 @@ terraform {
     }
     helm = {
       source  = "hashicorp/helm"
-      version = ">= 2.0"
+      version = "~> 2.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -25,23 +25,23 @@ terraform {
 # }
 
 provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_ca_certificate)
+  host                   = try(module.eks.cluster_endpoint, "https://localhost")
+  cluster_ca_certificate = try(base64decode(module.eks.cluster_ca_certificate), "")
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
-    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--region", var.aws_region]
+    args        = ["eks", "get-token", "--cluster-name", try(module.eks.cluster_name, "placeholder"), "--region", var.aws_region]
   }
 }
 
 provider "helm" {
-  kubernetes {
-    host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.cluster_ca_certificate)
+  kubernetes {                              
+    host                   = try(module.eks.cluster_endpoint, "https://localhost")
+    cluster_ca_certificate = try(base64decode(module.eks.cluster_ca_certificate), "")
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "aws"
-      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--region", var.aws_region]
+      args        = ["eks", "get-token", "--cluster-name", try(module.eks.cluster_name, "placeholder"), "--region", var.aws_region]
     }
   }
 }
