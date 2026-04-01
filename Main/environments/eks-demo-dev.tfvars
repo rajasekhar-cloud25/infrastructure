@@ -39,6 +39,11 @@ aws_region    = "us-east-1"
 github_repo   = "rajasekhar-cloud25/infrastructure"
 admin_iam_user_arn = "arn:aws:iam::008469331115:user/raj-admin"
 
+nlb_eip_allocation_ids = [
+  "eipalloc-09595a182e792f01f",
+  "eipalloc-032c83197c359b3fe"
+]
+
 # VPC (2 AZs for cost saving)
 availability_zones   = ["us-east-1a", "us-east-1b"]
 public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]

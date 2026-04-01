@@ -118,3 +118,8 @@ variable "eip_count" {
   type    = number
   default = 2
 }
+
+variable "nlb_eip_allocation_ids" {
+  type        = list(string)
+  description = "EIP allocation IDs for NLB"
+}

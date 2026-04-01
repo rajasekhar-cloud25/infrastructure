@@ -1,12 +1,3 @@
-data "aws_eip" "nlb" {
-  count = var.eip_count
-  filter {
-    name   = "tag:Name"
-    values = ["${var.primary_name}-nlb-eip-${count.index}"]
-  }
-}
-
-
 module "vpc" {
   source               = "../vpc"
   resource_name        = var.primary_name
@@ -60,7 +51,7 @@ module "eks" {
 
 module "kubernetes_ingress" {
   source = "../kubernetes-ingress"
-  nlb_eip_allocation_ids  = data.aws_eip.nlb[*].id
+  nlb_eip_allocation_ids  = var.nlb_eip_allocation_ids
   depends_on              = [module.eks, module.namespaces]
   domain_name             = var.domain_name
   dns_names               = var.dns_names
