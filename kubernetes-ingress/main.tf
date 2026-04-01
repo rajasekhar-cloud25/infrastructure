@@ -1,11 +1,3 @@
-terraform {
-  required_providers {
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.37.1"
-    }
-  }
-}
 resource "helm_release" "nginx_ingress" {
   name             = "nginx-ingress"
   chart            = "${path.module}/../charts/kubernetes-ingress"
