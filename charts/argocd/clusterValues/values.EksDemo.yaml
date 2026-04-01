@@ -4,6 +4,9 @@ global:
   domain: argocd.rajasekharcloud.com
 
 
+crds:
+  keep: false
+
 server:
   ingress:
     # -- Enable an ingress resource for the Argo CD server
