@@ -91,7 +91,7 @@ jobs:
         run: |
           terraform init \
             -backend-config="bucket=ecommerce-demo-terraform-state-$(aws sts get-caller-identity --query Account --output text)" \
-            -backend-config="key=infrastructure/ecommerce-k8s-demo.tfstate" \
+            -backend-config="key=ecommerce-k8s-demo.tfstate" \
             -backend-config="region=${{ vars.AWS_REGION }}" \
             -backend-config="encrypt=true"
 

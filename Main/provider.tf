@@ -35,7 +35,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  kubernetes {                              
+  kubernetes {
     host                   = try(module.eks.cluster_endpoint, "https://localhost")
     cluster_ca_certificate = try(base64decode(module.eks.cluster_ca_certificate), "")
     exec {
