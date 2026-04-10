@@ -569,24 +569,17 @@ resource "aws_iam_role_policy" "external_secrets" {
     Version = "2012-10-17"
     Statement = [
       {
-        # Read SSM parameters — scoped to project only
-        Effect = "Allow"
-        Action = [
-          "ssm:GetParameter",
-          "ssm:GetParameters",
-          "ssm:GetParametersByPath",
-          "ssm:DescribeParameters"
-        ]
-        Resource = "arn:aws:ssm:${local.region}:${local.account_id}:parameter/${var.resource_name}/*"
-      },
-      {
         # Read Secrets Manager — scoped to project only
         Effect = "Allow"
         Action = [
           "secretsmanager:GetSecretValue",
-          "secretsmanager:DescribeSecret"
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:ListSecrets",
+          "secretsmanager:BatchGetSecretValue",
+          "secretsmanager:GetResourcePolicy",
+          "secretsmanager:ListSecretVersionIds"
         ]
-        Resource = "arn:aws:secretsmanager:${local.region}:${local.account_id}:secret:${var.resource_name}/*"
+        Resource = "arn:aws:secretsmanager:${local.region}:${local.account_id}:secret:${var.resource_name}-*"
       },
       {
         # KMS — decrypt encrypted parameters
