@@ -74,3 +74,7 @@ output "cluster_ca_certificate" {
 output "cluster_name" {
   value = aws_eks_cluster.demo.name
 }
+
+output "ebs_csi_addon_status" {
+  value = aws_eks_addon.ebs_csi.status
+}

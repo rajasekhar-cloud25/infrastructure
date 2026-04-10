@@ -165,6 +165,22 @@ resource "aws_eks_node_group" "demo" {
   })
 }
 
+# Cluster addons
+
+resource "aws_eks_addon" "ebs_csi" {
+  cluster_name             = aws_eks_cluster.demo.name
+  addon_name               = "aws-ebs-csi-driver"
+  service_account_role_arn = var.ebs_csi_role_arn
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  depends_on = [
+    aws_eks_node_group.demo,
+  ]
+
+  tags = var.tags
+}
+
 
 
 # GitHub Actions role — cluster admin

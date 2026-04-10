@@ -143,3 +143,8 @@ variable "admin_iam_user_arn" {
   default     = ""
 }
 
+variable "ebs_csi_role_arn" {
+  description = "IRSA role ARN for EBS CSI driver"
+  type        = string
+}
+
