@@ -1,11 +1,11 @@
 resource "helm_release" "nginx_ingress" {
   name             = "nginx-ingress"
-  chart            = "${path.module}/../charts/kubernetes-ingress"
+  chart            = "${path.module}/../charts/ingress-nginx"
   namespace        = "default"
   create_namespace = true
 
   values = [
-    file("${path.module}/../charts/kubernetes-ingress/values.yaml")
+    file("${path.module}/../charts/ingress-nginx/values.externalLB.yaml")
   ]
 
   # Attach static EIPs to the NLB
@@ -18,17 +18,17 @@ resource "helm_release" "nginx_ingress" {
     value = join("\\,", var.public_subnet_ids)
     type  = "string"
   }
-  set {
-    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-cert"
-    value = var.acm_certificate_arn
-    type  = "string"
-  }
-
-  set {
-    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-ports"
-    value = "443"
-    type  = "string"
-  }
+  # set {
+  #   name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-cert"
+  #   value = var.acm_certificate_arn
+  #   type  = "string"
+  # }
+  #
+  # set {
+  #   name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-ports"
+  #   value = "443"
+  #   type  = "string"
+  # }
 
   set {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-backend-protocol"

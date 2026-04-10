@@ -1,0 +1,22 @@
+controller:
+  config:
+    use-forwarded-headers: "true"
+    proxy-real-ip-cidr: "0.0.0.0/0"
+  service:
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+      service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+  podAnnotations:
+    prometheus.io/port: 10254
+    prometheus.io/scrape: true
+  metrics:
+    enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
+  extraArgs:
+    default-ssl-certificate: "default/up-tls-cert"
+defaultBackend:
+  enabled: true
