@@ -76,5 +76,5 @@ output "cluster_name" {
 }
 
 output "ebs_csi_addon_status" {
-  value = aws_eks_addon.ebs_csi.status
+  value = aws_eks_addon.ebs_csi.id
 }
