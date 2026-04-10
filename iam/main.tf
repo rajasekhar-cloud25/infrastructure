@@ -607,7 +607,7 @@ resource "aws_iam_role" "cert_manager" {
       Action    = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = {
-          "${local.oidc_provider}:sub" = "system:serviceaccount:cert-manager:cert-manager"
+          "${local.oidc_provider}:sub" = "system:serviceaccount:cert-manager:cert-manager-controller"
           "${local.oidc_provider}:aud" = "sts.amazonaws.com"
         }
       }
