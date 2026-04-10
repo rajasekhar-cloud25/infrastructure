@@ -579,7 +579,7 @@ resource "aws_iam_role_policy" "external_secrets" {
           "secretsmanager:GetResourcePolicy",
           "secretsmanager:ListSecretVersionIds"
         ]
-        Resource = "arn:aws:secretsmanager:${local.region}:${local.account_id}:secret:${var.resource_name}-*"
+        Resource = "*"
       },
       {
         # KMS — decrypt encrypted parameters
