@@ -59,34 +59,23 @@ resource "helm_release" "cert_manager" {
 }
 
 
-resource "kubernetes_manifest" "letsencrypt_dns" {
-  manifest = {
-    apiVersion = "cert-manager.io/v1"
-    kind       = "ClusterIssuer"
-    metadata = {
-      name = "letsencrypt-dns"
-    }
-    spec = {
-      acme = {
-        email  = "devops@gmail.com"
-        server = "https://acme-v02.api.letsencrypt.org/directory"
-
-        privateKeySecretRef = {
-          name = "letsencrypt-dns-key"
-        }
-
-        solvers = [
-          {
-            dns01 = {
-              route53 = {
-                region = "us-east-1"
-              }
-            }
-          }
-        ]
-      }
-    }
-  }
+resource "kubectl_manifest" "letsencrypt_dns" {
+  yaml_body = <<YAML
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-dns
+spec:
+  acme:
+    email: devops@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-dns-key
+    solvers:
+      - dns01:
+          route53:
+            region: us-east-1
+YAML
 
   depends_on = [helm_release.cert_manager]
 }
