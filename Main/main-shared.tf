@@ -69,7 +69,7 @@ module "namespaces" {
 
 module "argocd_deployment" {
   source               = "../argocd_deployment"
-  depends_on = [module.eks, module.namespaces]
+  depends_on = [module.eks, module.namespaces, module.kubernetes_ingress]
 }
 
 
