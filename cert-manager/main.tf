@@ -1,3 +1,13 @@
+terraform {
+  required_providers {
+    kubectl = {
+      source  = "alekc/kubectl"
+      version = "2.1.6"
+    }
+  }
+}
+
+
 # resource "helm_release" "cert_manager" {
 #   name             = "cert-manager"
 #   chart            = "${path.module}/../charts/cert-manager"
