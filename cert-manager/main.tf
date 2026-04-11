@@ -1,12 +1,36 @@
+# resource "helm_release" "cert_manager" {
+#   name             = "cert-manager"
+#   chart            = "${path.module}/../charts/cert-manager"
+#   namespace        = "cert-manager"
+#   create_namespace = true
+#
+#   values = [
+#     file("${path.module}/../charts/cert-manager/values.yaml")
+#   ]
+#
+#   set {
+#     name  = "serviceAccount.name"
+#     value = "cert-manager-controller"
+#   }
+#
+#   set {
+#     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+#     value = var.cert_manager_role_arn
+#   }
+# }
+
 resource "helm_release" "cert_manager" {
-  name             = "cert-manager"
-  chart            = "${path.module}/../charts/cert-manager"
-  namespace        = "cert-manager"
+  name       = "cert-manager"
+  repository = "https://charts.jetstack.io"
+  chart      = "cert-manager"
+  version    = "v1.17.1"
+  namespace  = "cert-manager"
   create_namespace = true
 
-  values = [
-    file("${path.module}/../charts/cert-manager/values.yaml")
-  ]
+  set {
+    name  = "installCRDs"
+    value = "true"
+  }
 
   set {
     name  = "serviceAccount.name"
@@ -16,6 +40,11 @@ resource "helm_release" "cert_manager" {
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = var.cert_manager_role_arn
+  }
+
+  set {
+    name  = "serviceAccount.automountServiceAccountToken"
+    value = "true"
   }
 }
 
