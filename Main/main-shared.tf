@@ -76,4 +76,5 @@ module "argocd_deployment" {
 module "cert_manager" {
   source = "../cert-manager"
   cert_manager_role_arn = module.iam.cert_manager_role_arn
+  depends_on   = [module.eks, module.namespaces]
 }
